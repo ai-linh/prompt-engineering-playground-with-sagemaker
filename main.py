@@ -86,7 +86,7 @@ def validate_json_template(json_dictionary):
         return False
 
     if not "parameters" in json_dictionary["payload"].keys() and not type(
-        json_dictionary["payload"]["parameters"] == list
+            json_dictionary["payload"]["parameters"] == list
     ):
         st.warning(
             "Invalid Input: template.json must contain a payload key with parameters listed"
@@ -151,7 +151,7 @@ def handle_parameters(parameters):
                 p, ["True", "False"], help=parameter_help
             )
         elif (
-            type(minimum) == float and type(maximum) == float and type(default) == float
+                type(minimum) == float and type(maximum) == float and type(default) == float
         ):
             parameters[p] = st.sidebar.slider(
                 p,
@@ -186,7 +186,7 @@ def main():
 
     st.sidebar.title("Model Parameters")
     st.image("./ml_image_prompt.png")
-    
+
     # Adding your own model
     with st.expander("Add a New Model"):
         st.header("Add a New Model")
@@ -234,22 +234,22 @@ def main():
             parameters = handle_parameters(parameters)
 
         st.markdown(
-           output["description"]
+            output["description"]
         )
-    if selected_endpoint == "AI21-J2-GRANDE-INSTRUCT":
+    if selected_endpoint == "AI21-J2-GRANDE-INSTRUCT" or selected_endpoint == "AI21-J2-ULTRA":
         selected_task = st.selectbox(
             label="Example prompts",
-            options=example_list, 
-            on_change=on_clicked, 
+            options=example_list,
+            on_change=on_clicked,
             key="task"
-            )
+        )
     if selected_endpoint == "AI21-CONTEXT-QA":
         selected_task = st.selectbox(
             label="Example context",
-            options=example_context_ai21_qa, 
-            on_change=on_clicked_qa, 
+            options=example_context_ai21_qa,
+            on_change=on_clicked_qa,
             key="taskqa"
-            )
+        )
     if selected_endpoint == "AI21-SUMMARY" or selected_endpoint == "AI21-CONTEXT-QA":
         uploaded_file = st.file_uploader("Choose a file")
         if uploaded_file is not None:
@@ -258,9 +258,9 @@ def main():
             string_data = stringio.read()
             st.session_state.text = string_data
             prompt = st.session_state.text
-        
+
     prompt = st.text_area("Enter your prompt here:", height=350, key="text")
-    if selected_endpoint == "AI21-CONTEXT-QA":
+    if selected_endpoint == "AI21-CONTEXT-QA" or selected_endpoint == "FALCON-40B-INSTRUCT":
         question = st.text_area("Enter your question here", height=80, key="question")
     placeholder = st.empty()
 
@@ -278,7 +278,7 @@ def main():
             # }
             if parameters != "None":
                 payload = {"text_inputs": prompt, **parameters}
-            else: 
+            else:
                 payload = {"text_inputs": prompt}
             if output["model_type"] == "AI21":
                 print('-------- Payload ----------', payload)
@@ -295,7 +295,11 @@ def main():
                 generated_text = generate_text_ai21_context_qa(payload, question, endpoint_name)
                 final_text = f''' {generated_text} ''' # to take care of multi line prompt
                 st.write(final_text)
-            else: 
+            elif output["model_type"] == "FALCON-CONTEXT-QA":
+                generated_text = generate_text_falcon_context_qa(payload, question, endpoint_name)
+                final_text = f''' {generated_text} ''' # to take care of multi line prompt
+                st.write(final_text)
+            else:
                 generated_text = generate_text(payload, endpoint_name)
                 final_text = f''' {generated_text} ''' # to take care of multi line prompt
                 st.write(final_text)
