@@ -260,7 +260,7 @@ def main():
             prompt = st.session_state.text
 
     prompt = st.text_area("Enter your prompt here:", height=350, key="text")
-    if selected_endpoint == "AI21-CONTEXT-QA" or selected_endpoint == "FALCON-40B-INSTRUCT":
+    if selected_endpoint == "AI21-CONTEXT-QA": # or selected_endpoint == "FALCON-40B-INSTRUCT":
         question = st.text_area("Enter your question here", height=80, key="question")
     placeholder = st.empty()
 
@@ -296,7 +296,7 @@ def main():
                 final_text = f''' {generated_text} ''' # to take care of multi line prompt
                 st.write(final_text)
             elif output["model_type"] == "FALCON-CONTEXT-QA":
-                generated_text = generate_text_falcon_context_qa(payload, question, endpoint_name)
+                generated_text = generate_text_falcon(payload, endpoint_name)
                 final_text = f''' {generated_text} ''' # to take care of multi line prompt
                 st.write(final_text)
             else:

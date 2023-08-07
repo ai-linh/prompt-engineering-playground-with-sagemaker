@@ -88,3 +88,18 @@ def generate_text_falcon_context_qa(payload, question, endpoint_name):
     print("Model input: \n", encoded_input)
     result = json.loads(response["Body"].read())
     return result[0]['generated_text']
+
+def generate_text_falcon(payload, endpoint_name):
+    print("payload: ", payload)
+    encoded_input = json.dumps({
+        "inputs":payload["text_inputs"],
+        "parameters": {
+            "max_new_tokens":payload["maxTokens"],
+            "temperature":payload["temperature"]
+        }}).encode("utf-8")
+    response = sagemaker_runtime.invoke_endpoint(
+        EndpointName=endpoint_name, ContentType="application/json", Body=encoded_input
+    )
+    print("Model input: \n", encoded_input)
+    result = json.loads(response["Body"].read())
+    return result[0]['generated_text']
